@@ -1,8 +1,11 @@
 const express = require('express');
 const fs = require('fs');
+const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 const PORT = 3000;
 const database = {
     users: [
@@ -22,6 +25,13 @@ const database = {
             entries: 0,
             joined: new Date()
         }
+    ],
+    login: [
+        {
+            id: '987',
+            hash: '',
+            email: 'john@gmail.com'
+        }
     ]
 }
 
@@ -32,7 +42,7 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
     if (req.body.email === database.users[0].email && 
         req.body.password === database.users[0].password) {
-            res.json('success');
+            res.json(database.users[0]);
         } else {
             res.status(400).json('error');
         }
@@ -73,13 +83,25 @@ app.put('/image', (req, res) => {
         if (user.id === id) {
             found = true;
             user.entries++;
-            return res.json(user);
+            return res.json(user.entries);
         }
     })
     if (!found) {
         res.status(404).send('user not found');
     }
 })
+
+bcrypt.hash("cookies", null, null, function(err, hash) {
+    console.log(hash);
+});
+
+// Load hash from your password DB.
+bcrypt.compare("cookies", "$2a$10$XDQNwRgoQRo1n4u3xU/EMOqvIRnVGTPMYipcQ7VxHMZL3Uf2h2pTm", function(err, res) {
+    console.log(res);
+});
+bcrypt.compare("veggies", "$2a$10$XDQNwRgoQRo1n4u3xU/EMOqvIRnVGTPMYipcQ7VxHMZL3Uf2h2pTm", function(err, res) {
+    console.log(res);
+});
 
 app.listen(PORT, () => {
     console.log('Listening on port:', PORT);
