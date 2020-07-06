@@ -2,6 +2,19 @@ const express = require('express');
 const fs = require('fs');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const knex = require('knex');
+
+const pg = knex({
+    client: 'pg',
+    connection: {
+      host : '127.0.0.1',
+      user : 'postgres',
+      password : 'Ww1047171!',
+      database : 'smart-brain'
+    }
+});
+
+console.log(pg.select().from('users'));
 
 const app = express();
 app.use(express.json());
