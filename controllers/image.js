@@ -1,3 +1,5 @@
+// When user submits an image for face detection
+// we update the entry count of the user
 const handleImage = (req, res, db) => {
     const { id } = req.body;
     db('users').where('id', '=', id)
