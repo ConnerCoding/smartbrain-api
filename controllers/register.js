@@ -1,3 +1,6 @@
+// Receive form input from user - input name and email
+// into DB. Use bcrypt to hash and store password
+// Respond to front end with the user
 const handleRegister = (req, res, db, bcrypt) => {
     const { name, email, password } = req.body;
     if (!email || !name || !password) {
