@@ -1,3 +1,4 @@
+// Lookup user by id - if exists, return the user info
 const handleProfile = (req, res, db) => {
     const { id } = req.params;
     db.select().from('users').where({
