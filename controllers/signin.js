@@ -1,3 +1,5 @@
+// Sign in using email and password hash via bcrypt
+// If valid, then log in and respond with the user
 const handleSignin = (req, res, db, bcrypt) => {
     db.select('email', 'hash').from('login')
     .where('email', '=', req.body.email)
