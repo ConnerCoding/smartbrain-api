@@ -1,33 +1,34 @@
 // Receive form input from user - input name and email
 // into DB. Use bcrypt to hash and store password
 // Respond to front end with the user
-const handleRegister = (req, res, db, bcrypt) => {
+const handleRegister = async (req, res, db, bcrypt) => {
     const { name, email, password } = req.body;
     if (!email || !name || !password) {
         return res.status(400).json('incorrect form submission');
     }
-    const hash = bcrypt.hashSync(password);
-        db.transaction(trx => {
-            trx.insert({
+    try {
+        const hash = await bcrypt.hash(password, 12);
+        const user = await db.transaction(async trx => {
+            const [login] = await trx.insert({
                 hash: hash,
                 email: email
             })
             .into('login')
-            .returning('email')
-            .then(loginEmail => {
-                return trx('users').returning('*').insert({
-                    name: name,
-                    email: loginEmail[0],
-                    joined: new Date()
-                })
-                .then(user => {
-                    res.json(user[0]);
-            })
-        })
-        .then(trx.commit)
-        .catch(trx.rollback)
-        })
-        .catch(err => res.status(400).json('unable to register'));
+            .returning('email');
+
+            const [createdUser] = await trx('users').returning('*').insert({
+                name: name,
+                email: login.email,
+                joined: new Date()
+            });
+
+            return createdUser;
+        });
+
+        return res.json(user);
+    } catch (err) {
+        return res.status(400).json('unable to register');
+    }
 }
 
 module.exports = {

@@ -1,11 +1,6 @@
-const express = require('express');
-const bcrypt = require('bcrypt-nodejs');
-const cors = require('cors');
+const bcrypt = require('bcrypt');
 const knex = require('knex');
-const register = require('./controllers/register');
-const signin = require('./controllers/signin');
-const profile = require('./controllers/profile');
-const image = require('./controllers/image');
+const { createApp } = require('./app');
 
 // Connect to postgresql db using knex
 const db = knex({
@@ -18,19 +13,8 @@ const db = knex({
     }
 });
 
-// Start express app and middlewares
-const app = express();
-app.use(express.json());
-app.use(cors());
+const app = createApp({ db, bcrypt });
 const PORT = process.env.PORT || 3000;
-
-
-// Routes/API
-app.get('/', (req, res) => res.send('It is running'))
-app.post('/signin', (req, res) => signin.handleSignin(req, res, db, bcrypt))
-app.post('/register', (req, res) => register.handleRegister(req, res, db, bcrypt))
-app.get('/profile/:id', (req, res) => profile.handleProfile(req, res, db))
-app.put('/image', (req, res) => image.handleImage(req, res, db))
 
 app.listen(PORT, () => {
     console.log('Listening on port:', PORT);
